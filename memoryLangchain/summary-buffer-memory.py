@@ -1,4 +1,4 @@
-from langchain.chains.conversation.memory import ConversationSummaryMemory
+from langchain.chains.conversation.memory import ConversationSummaryBufferMemory
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import ConversationChain
 from dotenv import load_dotenv
@@ -14,21 +14,22 @@ API_KEY = os.getenv("GOOGLE_API_KEY")
 if not API_KEY:
     raise ValueError("API key not found. Ensure you have a .env file with GOOGLE_API_KEY set.")
 
+
 # Initialize the chat model
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash",
-                              api_key=API_KEY ) # Pass the API key)
+                                 api_key=API_KEY )
 
-# It creates a summary memory for the conversation that will store summaries of past interactions
-memory = ConversationSummaryMemory(
+# It creates a summary buffer memory that keeps a summary of old messages and recent messages in buffer
+memory = ConversationSummaryBufferMemory(
     llm=llm,
-    return_messages=True,
     max_token_limit=200, # Maximum number of tokens to keep in memory
 )
 
-# It creates a conversation chain with the chat model and the summary memory
+# It creates a conversation chain with the chat model and summary buffer memory
 conversation = ConversationChain(
     llm=llm,
     memory=memory,
+    verbose=True # To see the conversation flow
 )
 
 while True:
@@ -38,8 +39,9 @@ while True:
     # Check for exit command
     if user_input.lower() in ['bye', 'exit']:
         print("Goodbye!")
-        
-        # Print the summarized conversation history
+
+        # Print the conversation history with summaries
+        print("\nConversation Summary:")
         print(conversation.memory.buffer)
         break
     
