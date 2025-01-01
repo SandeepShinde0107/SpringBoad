@@ -21,7 +21,6 @@ memory = ConversationBufferWindowMemory(k=2)  # Example here it will last for 2 
 # Initialize the chat model
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash",
                                  api_key=API_KEY )
-
 # It creates a conversation chain with the chat model and the window memory
 conversation = ConversationChain(
     llm=llm,
